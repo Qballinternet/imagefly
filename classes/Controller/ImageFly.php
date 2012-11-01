@@ -5,7 +5,7 @@
  * @author    Fady Khalife
  * @uses      Image Module
  */
- 
+
 class Controller_ImageFly extends Controller
 {
     public function action_index()

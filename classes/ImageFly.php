@@ -54,10 +54,29 @@ class ImageFly
     protected $cached_file = NULL;
 
     /**
-     * Constructorbot
+     * @var  array       The params from Request
      */
-    public function __construct()
+    protected $params = NULL;
+
+    /**
+     * Constructorbot
+     *
+     * @param  array  $params    Array to overwrite 'params' and 'imagepath'.
+     *                           Defaults to Request::current()->param()
+     */
+    public function __construct(array $params=NULL)
     {
+    	// Load params from argument
+    	if ($params)
+    	{
+    		$this->params = $params;
+    	}
+    	// Load params from current request
+    	else
+    	{
+    		$this->params = Request::current()->param();
+    	}
+
         // Prevent unnecessary warnings on servers that are set to display E_STRICT errors, these will damage the image data.
         error_reporting(error_reporting() & ~E_STRICT);
 
@@ -149,8 +168,8 @@ class ImageFly
     private function _set_params()
     {
         // Get values from request
-        $params = Request::current()->param('params');
-        $filepath = Request::current()->param('imagepath');
+        $params = Arr::get($this->params, 'params');
+        $filepath = Arr::get($this->params, 'imagepath');
 
         // If enforcing params, ensure it's a match
         if ($this->config['enforce_presets'] AND ! in_array($params, $this->config['presets']))

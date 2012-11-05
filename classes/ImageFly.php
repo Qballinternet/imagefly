@@ -179,7 +179,11 @@ class ImageFly
         $this->image = Image::factory($filepath);
 
         // The parameters are separated by hyphens
-        $raw_params = explode('-', $params);
+        $raw_params = array();
+        if ($params)
+        {
+        	$raw_params = explode('-', $params);
+        }
 
         // Set default param values
         $this->url_params['w'] = NULL;

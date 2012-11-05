@@ -64,7 +64,7 @@ class ImageFly
      * @param  array  $params    Array to overwrite 'params' and 'imagepath'.
      *                           Defaults to Request::current()->param()
      */
-    public function __construct(array $params=NULL)
+    public function __construct(array $params=NULL, array $default_param_values=array())
     {
     	// Load params from argument
     	if ($params)
@@ -87,7 +87,7 @@ class ImageFly
         $this->_create_cache_dir();
 
         // Parse and set the image modify params
-        $this->_set_params();
+        $this->_set_params($default_param_values);
 
         // Set the source file modified timestamp
         $this->source_modified = filemtime($this->source_file);
@@ -165,7 +165,7 @@ class ImageFly
      * h = Height (int)
      * c = Crop (bool)
      */
-    private function _set_params()
+    private function _set_params(array $default_param_values=array())
     {
         // Get values from request
         $params = Arr::get($this->params, 'params');
@@ -186,10 +186,11 @@ class ImageFly
         }
 
         // Set default param values
-        $this->url_params['w'] = NULL;
-        $this->url_params['h'] = NULL;
-        $this->url_params['c'] = FALSE;
-        $this->url_params['q'] = NULL;
+        $this->url_params['w'] = Arr::get($default_param_values, 'w', NULL);
+        $this->url_params['h'] = Arr::get($default_param_values, 'h', NULL);
+        $this->url_params['c'] = Arr::get($default_param_values, 'c', FALSE);
+        $this->url_params['q'] = Arr::get($default_param_values, 'c', NULL);
+
 
         // Update param values from passed values
         foreach ($raw_params as $raw_param)

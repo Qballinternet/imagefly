@@ -274,10 +274,17 @@ class ImageFly
     	// Get extension from file
         $ext = strtolower(pathinfo($this->source_file, PATHINFO_EXTENSION));
 
-        // No extension, try getting it from mime
+        // No extension
         if ( ! $ext)
         {
+        	// Get from mime
         	$ext = File::ext_by_mime(File::mime($this->source_file));
+
+        	// Fix multiple jpg types from Kohana mime array
+        	if ($ext == 'jpe')
+        	{
+        		$ext = 'jpg';
+        	}
         }
 
         $encode = md5($this->source_file.http_build_query($this->url_params));

@@ -171,10 +171,15 @@ class ImageFly
         $params = Arr::get($this->params, 'params');
         $filepath = Arr::get($this->params, 'imagepath');
 
-        // If enforcing params, ensure it's a match
-        if ($this->config['enforce_presets'] AND ! in_array($params, $this->config['presets']))
-            throw new HTTP_Exception_404('The requested URL :uri was not found on this server.',
+        // If it has params and its enforcing params, ensure it's a match
+        if ($this->url_params AND
+            $this->config['enforce_presets'] AND
+            ! in_array($params, $this->config['presets'])
+        )
+        {
+        	throw new HTTP_Exception_404('The requested URL :uri was not found on this server.',
                                                     array(':uri' => Request::$current->uri()));
+        }
 
         $this->image = Image::factory($filepath);
 
@@ -225,13 +230,6 @@ class ImageFly
 			if ($this->url_params['h'] > $this->image->height) $this->url_params['h'] = $this->image->height;
 		}
 
-        // Must have at least a width or height
-        if(empty($this->url_params['w']) AND empty($this->url_params['h']))
-        {
-            throw new HTTP_Exception_404('The requested URL :uri was not found on this server.',
-                                                    array(':uri' => Request::$current->uri()));
-        }
-
         // Set the url filepath
         $this->source_file = $filepath;
     }
@@ -255,10 +253,13 @@ class ImageFly
     {
         $image_info = getimagesize($this->source_file);
 
-        if (($this->url_params['w'] == $image_info[0]) AND ($this->url_params['h'] == $image_info[1]))
+		// Same width and height or no params at all
+       	if (($this->url_params['w'] == $image_info[0]) AND ($this->url_params['h'] == $image_info[1]) OR
+            ! $this->url_params['w'] AND ! $this->url_params['h']
+        )
         {
             $this->serve_default = TRUE;
-            return FALSE;
+ 	        return FALSE;
         }
 
         return TRUE;

@@ -271,7 +271,15 @@ class ImageFly
      */
     private function _encoded_filename()
     {
+    	// Get extension from file
         $ext = strtolower(pathinfo($this->source_file, PATHINFO_EXTENSION));
+
+        // No extension, try getting it from mime
+        if ( ! $ext)
+        {
+        	$ext = File::ext_by_mime(File::mime($this->source_file));
+        }
+
         $encode = md5($this->source_file.http_build_query($this->url_params));
 
         // Build the parts of the filename

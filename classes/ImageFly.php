@@ -279,12 +279,28 @@ class ImageFly
 		if ( ! $ext)
 		{
 			// Get from mime
-			$ext = File::ext_by_mime(File::mime($this->source_file));
+			$mime = File::mime($this->source_file);
 
-			// Fix multiple jpg types from Kohana mime array
-			if ($ext == 'jpe')
+			// Mime is "application/octet-stream", this happens in some cases
+			// due to bad server versions of ImageMagick. We assume this
+			// module is used for images, so default to jpg. In most cases
+			// this will make sure things will keep functioning
+			if ($mime === 'application/octet-stream')
 			{
+				// Fallback to jpg
 				$ext = 'jpg';
+			}
+			// Normal mime
+			else
+			{
+				// application/octet-stream
+				$ext = File::ext_by_mime($mime);
+
+				// Fix multiple jpg types from Kohana mime array
+				if ($ext == 'jpe')
+				{
+					$ext = 'jpg';
+				}
 			}
 		}
 

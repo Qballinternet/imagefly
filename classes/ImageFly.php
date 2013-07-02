@@ -293,14 +293,42 @@ class ImageFly
 			// Normal mime
 			else
 			{
-				// application/octet-stream
-				$ext = File::ext_by_mime($mime);
+				// Try get extension using Kohana method
+               	try
+                {
+                        // application/octet-stream
+                        $ext = File::ext_by_mime($mime);
 
-				// Fix multiple jpg types from Kohana mime array
-				if ($ext == 'jpe')
-				{
-					$ext = 'jpg';
-				}
+                        // Fix multiple jpg types from Kohana mime array
+                        if ($ext == 'jpe')
+                        {
+                                $ext = 'jpg';
+                        }
+                }
+                // Exception, find proper extension ourself 
+                catch (\Exception $ex)
+                {
+                        // Is bmp message
+                        if (strpos(strtolower($mime), 'bmp'))
+                        { 
+                                $ext = 'jpg';
+                        }
+                        // Is png image
+                        elseif (strpos(strtolower($mime), 'png'))
+                        {
+                                $ext = 'png';
+                        }
+                        // Is gif image
+                        elseif (strpos(strtolower($mime), 'gif'))
+                        {
+                                $ext = 'gif';
+                        }
+                        // No matches, fallback to jpg
+                        else
+                        {
+                                $ext = 'jpg';
+                        }
+                }
 			}
 		}
 

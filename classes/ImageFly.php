@@ -172,8 +172,7 @@ class ImageFly
 		$filepath = Arr::get($this->params, 'imagepath');
 
 		// If it has params and its enforcing params, ensure it's a match
-		if ($this->url_params AND
-			$this->config['enforce_presets'] AND
+		if ($this->config['enforce_presets'] AND
 			! in_array($params, $this->config['presets'])
 		)
 		{
@@ -305,12 +304,12 @@ class ImageFly
                                 $ext = 'jpg';
                         }
                 }
-                // Exception, find proper extension ourself 
+                // Exception, find proper extension ourself
                 catch (\Exception $ex)
                 {
                         // Is bmp message
                         if (strpos(strtolower($mime), 'bmp'))
-                        { 
+                        {
                                 $ext = 'jpg';
                         }
                         // Is png image

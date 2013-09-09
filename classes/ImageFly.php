@@ -250,7 +250,17 @@ class ImageFly
 	 */
 	private function _cached_required()
 	{
+
 		$image_info = getimagesize($this->source_file);
+		$exif = exif_read_data($this->source_file);
+
+		// Has orientation exif info to fix
+		if ( ! empty($exif['Orientation']) AND
+			in_array($exif['Orientation'], array(8,3,6)))
+		{
+			// We will cache to fix any orientation issues
+			return TRUE;
+		}
 
 		// Same width and height or no params at all
 	   	if (($this->url_params['w'] == $image_info[0]) AND ($this->url_params['h'] == $image_info[1]) OR
@@ -369,6 +379,31 @@ class ImageFly
 			//Save image with default quality
 			$this->image->save($this->cached_file);
 		}
+
+		// Check whether we need to rotate
+		try
+		{
+			$exif = exif_read_data($this->cached_file);
+			if( ! empty($exif['Orientation']))
+			{
+			    switch($exif['Orientation']) {
+					case 8:
+						$this->image->rotate(90);
+						$this->image->save($this->cached_file);
+					break;
+					case 3:
+						$this->image->rotate(180);
+						$this->image->save($this->cached_file);
+					break;
+					case 6:
+						$this->image->rotate(-90);
+						$this->image->save($this->cached_file);
+					break;
+			    }
+			}
+		}
+		// Ignore any error
+		catch (\Exception $ex) {}
 	}
 
 	/**

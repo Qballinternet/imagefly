@@ -252,15 +252,21 @@ class ImageFly
 	{
 
 		$image_info = getimagesize($this->source_file);
-		$exif = exif_read_data($this->source_file);
 
-		// Has orientation exif info to fix
-		if ( ! empty($exif['Orientation']) AND
-			in_array($exif['Orientation'], array(8,3,6)))
+		// Try reading exif information for orientation key
+		try
 		{
-			// We will cache to fix any orientation issues
-			return TRUE;
+			$exif = exif_read_data($this->source_file);
+			// Has orientation exif info we need to fix, thus cache the file
+			if ( ! empty($exif['Orientation']) AND
+				in_array($exif['Orientation'], array(8,3,6)))
+			{
+				// We will cache to fix any orientation issues
+				return TRUE;
+			}
 		}
+		// Ignore any error
+		catch (\Exception $ex) {}
 
 		// Same width and height or no params at all
 	   	if (($this->url_params['w'] == $image_info[0]) AND ($this->url_params['h'] == $image_info[1]) OR

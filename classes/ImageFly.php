@@ -374,6 +374,28 @@ class ImageFly
 			$this->image->resize($this->url_params['w'], $this->url_params['h']);
 		}
 
+		// Check whether we need to rotate
+		try
+		{
+			$exif = exif_read_data($this->source_file);
+			if( ! empty($exif['Orientation']))
+			{
+			    switch($exif['Orientation']) {
+					case 8:
+						$this->image->rotate(90);
+					break;
+					case 3:
+						$this->image->rotate(180);
+					break;
+					case 6:
+						$this->image->rotate(-90);
+					break;
+			    }
+			}
+		}
+		// Ignore any error
+		catch (\Exception $ex) {}
+
 		// Save
 		if($this->url_params['q'])
 		{
@@ -385,31 +407,6 @@ class ImageFly
 			//Save image with default quality
 			$this->image->save($this->cached_file);
 		}
-
-		// Check whether we need to rotate
-		try
-		{
-			$exif = exif_read_data($this->cached_file);
-			if( ! empty($exif['Orientation']))
-			{
-			    switch($exif['Orientation']) {
-					case 8:
-						$this->image->rotate(90);
-						$this->image->save($this->cached_file);
-					break;
-					case 3:
-						$this->image->rotate(180);
-						$this->image->save($this->cached_file);
-					break;
-					case 6:
-						$this->image->rotate(-90);
-						$this->image->save($this->cached_file);
-					break;
-			    }
-			}
-		}
-		// Ignore any error
-		catch (\Exception $ex) {}
 	}
 
 	/**

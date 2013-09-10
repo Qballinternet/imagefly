@@ -360,20 +360,6 @@ class ImageFly
 	 */
 	private function _create_cached()
 	{
-		if($this->url_params['c'])
-		{
-			// Resize to highest width or height with overflow on the larger side
-			$this->image->resize($this->url_params['w'], $this->url_params['h'], Image::INVERSE);
-
-			// Crop any overflow from the larger side
-			$this->image->crop($this->url_params['w'], $this->url_params['h']);
-		}
-		else
-		{
-			// Just Resize
-			$this->image->resize($this->url_params['w'], $this->url_params['h']);
-		}
-
 		// Check whether we need to rotate
 		try
 		{
@@ -395,6 +381,20 @@ class ImageFly
 		}
 		// Ignore any error
 		catch (\Exception $ex) {}
+
+		if($this->url_params['c'])
+		{
+			// Resize to highest width or height with overflow on the larger side
+			$this->image->resize($this->url_params['w'], $this->url_params['h'], Image::INVERSE);
+
+			// Crop any overflow from the larger side
+			$this->image->crop($this->url_params['w'], $this->url_params['h']);
+		}
+		else
+		{
+			// Just Resize
+			$this->image->resize($this->url_params['w'], $this->url_params['h']);
+		}
 
 		// Save
 		if($this->url_params['q'])

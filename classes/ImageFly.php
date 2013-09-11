@@ -396,7 +396,7 @@ class ImageFly
 			// Crop any overflow from the larger side
 			$this->image->crop($this->url_params['w'], $this->url_params['h']);
 		}
-		else
+		elseif($this->url_params['w'] OR $this->url_params['h'])
 		{
 			// Just Resize
 			$this->image->resize($this->url_params['w'], $this->url_params['h']);

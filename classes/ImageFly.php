@@ -360,6 +360,9 @@ class ImageFly
 	 */
 	private function _create_cached()
 	{
+		// Do not strip exif info by default
+		$strip_exif = FALSE;
+
 		// Check whether we need to rotate
 		try
 		{
@@ -369,12 +372,15 @@ class ImageFly
 			    switch($exif['Orientation']) {
 					case 8:
 						$this->image->rotate(90);
+						$strip_exif = TRUE;
 					break;
 					case 3:
 						$this->image->rotate(180);
+						$strip_exif = TRUE;
 					break;
 					case 6:
 						$this->image->rotate(-90);
+						$strip_exif = TRUE;
 					break;
 			    }
 			}
@@ -406,6 +412,15 @@ class ImageFly
 		{
 			//Save image with default quality
 			$this->image->save($this->cached_file);
+		}
+
+		// Strip any exif info when we used Imagick driver (GD removes by default)
+		if ($this->image instanceof Image_Imagick AND $strip_exif)
+		{
+			$img = new Imagick($this->cached_file);
+			$img->stripImage();
+			$img->writeImage($this->cached_file);
+			$img->destroy();
 		}
 	}
 

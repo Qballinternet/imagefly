@@ -370,15 +370,15 @@ class ImageFly
 			if( ! empty($exif['Orientation']))
 			{
 			    switch($exif['Orientation']) {
-					case 8:
-						$this->image->rotate(90);
-						$strip_exif = TRUE;
-					break;
 					case 3:
 						$this->image->rotate(180);
 						$strip_exif = TRUE;
 					break;
 					case 6:
+						$this->image->rotate(90);
+						$strip_exif = TRUE;
+					break;
+					case 8:
 						$this->image->rotate(-90);
 						$strip_exif = TRUE;
 					break;

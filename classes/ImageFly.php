@@ -122,7 +122,13 @@ class ImageFly
 			}
 			catch(Exception $e)
 			{
-				throw new Kohana_Exception($e);
+				// The dir still not exists (we check cause sometimes two
+				// requests are handled at the same time)
+				if( ! file_exists($this->config['cache_dir']))
+				{
+					// Rethrow exception again
+					throw $e;
+				}
 			}
 		}
 
@@ -150,7 +156,13 @@ class ImageFly
 				}
 				catch(Exception $e)
 				{
-					throw new Kohana_Exception($e);
+					// The dir still not exists (we check cause sometimes two
+					// requests are handled at the same time)
+					if( ! file_exists($mimic_dir))
+					{
+						// Rethrow exception again
+						throw $e;
+					}
 				}
 			}
 

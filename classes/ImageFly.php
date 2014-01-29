@@ -30,6 +30,12 @@ class ImageFly
 	protected $serve_default = FALSE;
 
 	/**
+	 * @var  boolean  Whether a default file should be served when the image
+	 *                dimensions are the same as the params
+	 */
+	protected $serve_default_on_same_dimensions = FALSE;
+
+	/**
 	 * @var  string	  The source filepath and filename
 	 */
 	protected $source_file = NULL;
@@ -42,6 +48,11 @@ class ImageFly
 	 *				   q = Quality (int)
 	 */
 	protected $url_params = array();
+
+	/**
+	 * @var  array  Original URL params (no modifcations to h or w)
+	 */
+	protected $url_params_original;
 
 	/**
 	 * @var  string	  Last modified Unix timestamp of the source file
@@ -207,6 +218,8 @@ class ImageFly
 		$this->url_params['c'] = Arr::get($default_param_values, 'c', FALSE);
 		$this->url_params['q'] = Arr::get($default_param_values, 'c', NULL);
 
+		// Store default params to original params
+		$this->url_params_original = $this->url_params;
 
 		// Update param values from passed values
 		foreach ($raw_params as $raw_param)
@@ -216,6 +229,7 @@ class ImageFly
 			if ($name == 'c')
 			{
 				$this->url_params[$name] = TRUE;
+				$this->url_params_original[$name] = TRUE;
 
 				// When croping, we must have a width and height to pass to imagecreatetruecolor method
 				// Make width the height or vice versa if either is not passed
@@ -231,6 +245,7 @@ class ImageFly
 			else
 			{
 				$this->url_params[$name] = $value;
+				$this->url_params_original[$name] = $value;
 			}
 		}
 
@@ -281,8 +296,10 @@ class ImageFly
 		catch (\Exception $ex) {}
 
 		// Same width and height or no params at all
-	   	if (($this->url_params['w'] == $image_info[0]) AND ($this->url_params['h'] == $image_info[1]) OR
-			! $this->url_params['w'] AND ! $this->url_params['h']
+	   	if ( ($this->serve_default_on_same_dimensions AND
+	   		  $this->url_params['w'] == $image_info[0] AND ($this->url_params['h'] == $image_info[1]))
+	   		OR
+			( ! $this->url_params['w'] AND ! $this->url_params['h'])
 		)
 		{
 			$this->serve_default = TRUE;
@@ -359,10 +376,12 @@ class ImageFly
 			}
 		}
 
-		$encode = md5($this->source_file.http_build_query($this->url_params));
+		// $encode = md5($this->source_file.http_build_query($this->url_params));
+		$encode = strtolower(pathinfo($this->source_file, PATHINFO_FILENAME));
 
 		// Build the parts of the filename
-		$encoded_name = $encode.'-'.$this->source_modified.'.'.$ext;
+		// $encoded_name = $encode.'-'.$this->source_modified.'.'.$ext;
+		$encoded_name = $encode.'_'.http_build_query($this->url_params_original).'.'.$ext;
 
 		return $encoded_name;
 	}

@@ -453,6 +453,13 @@ class ImageFly
 			$img->writeImage($this->cached_file);
 			$img->destroy();
 		}
+
+		// Loop exec commands when there are any in the config
+		if ($exec_commands = $this->config['exec_commands'])
+		foreach ($exec_commands as $cmd)
+		{
+			exec($cmd.' "'.$this->cached_file.'"', $output);
+		}
 	}
 
 	/**

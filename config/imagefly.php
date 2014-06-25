@@ -16,4 +16,10 @@ return array
     'presets'          => array(
         'w320-h240-c-q60',
     ),
+
+     // Exec commands that expect a file at the end like <command> <file>
+    'exec_commands' => array(
+        // 'jpegoptim -p -m90 --strip-all',
+        // 'optipng',
+    ),
 );

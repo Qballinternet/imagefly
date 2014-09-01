@@ -448,10 +448,20 @@ class ImageFly
 		// Strip any exif info when we used Imagick driver (GD removes by default)
 		if ($this->image instanceof Image_Imagick AND $strip_exif)
 		{
-			$img = new Imagick($this->cached_file);
-			$img->stripImage();
-			$img->writeImage($this->cached_file);
-			$img->destroy();
+			// Try cleaning file using Imagick
+			try
+			{
+				$img = new Imagick($this->cached_file);
+				$img->stripImage();
+				$img->writeImage($this->cached_file);
+				$img->destroy();
+			}
+			// Catch imagick exception
+			catch (ImagickException $ex)
+			{
+				// do nothing. We do not want to die on simple read errors
+			}
+
 		}
 
 		// Loop exec commands when there are any in the config

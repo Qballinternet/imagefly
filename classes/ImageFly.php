@@ -468,7 +468,25 @@ class ImageFly
 		if ($exec_commands = $this->config['exec_commands'])
 		foreach ($exec_commands as $cmd)
 		{
-			exec($cmd.' "'.$this->cached_file.'"', $output);
+            try
+            {
+				exec($cmd.' "'.$this->cached_file.'"', $output);
+			}
+            catch (\Exception $ex)
+            {
+                // Is fork error
+                if (preg_match('/unable to fork/i', $ex->getMessage()))
+                {
+                   // Log error and just continue
+                   Log::instance()->add(Log::ERROR, $ex->getMessage());
+                }
+                // Other error
+                else
+                {
+                    // Rethrow error
+                    throw $ex;
+                }
+            }
 		}
 	}
 

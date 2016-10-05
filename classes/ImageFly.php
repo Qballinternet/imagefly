@@ -470,7 +470,7 @@ class ImageFly
 		{
             try
             {
-				exec($cmd.' "'.$this->cached_file.'"', $output);
+				exec($cmd.' "'.$this->cached_file.'" 2> /dev/null', $output);
 			}
             catch (\Exception $ex)
             {
